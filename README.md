@@ -1,5 +1,8 @@
 ## Advanced_Lane_Finding
 
+## Goal
+In this project, your goal is to write a software pipeline to identify the lane boundaries in a video
+
 ## Writeup for Project
 
 
@@ -18,6 +21,11 @@ The steps taken in this project are the following:
 * Warp the detected lane boundaries back onto the original image.
 * Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
 
+The images for camera calibration are stored in the folder called `camera_cal`.  The images in `test_images` are for testing your pipeline on single frames.  If you want to extract more test images from the videos, you can simply use an image writing method like `cv2.imwrite()`, i.e., you can read the video in frame by frame as usual, and for frames you want to save for later you can write to an image file.  
+
+To help the reviewer examine your work, please save examples of the output from each stage of your pipeline in the folder called `output_images`, and include a description in your writeup for the project of what each image shows.    The video called `project_video.mp4` is the video your pipeline should work well on.  
+
+The `challenge_video.mp4` video is an extra (and optional) challenge for you if you want to test your pipeline under somewhat trickier conditions.  The `harder_challenge.mp4` video is another optional challenge and is brutal!
 
 ## Project Overview
 
@@ -43,6 +51,17 @@ I used the OpenCV functions **findChessboardCorners** and **drawChessboardCorner
 
 I then used the output `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result:
 
+```
+# Displaying the corners
+        cv2.drawChessboardCorners(img, (chess_columns,chess_rows), corners, ret)
+        f, (axis1, axis2) = plt.subplots(1, 2, figsize=(15,10))
+        axis1.imshow(cv2.cvtColor(mplimg.imread(cal_image), cv2.COLOR_BGR2RGB))
+        axis1.set_title(str(i)+'. Input Image ('+image_name+'.jpg)', fontsize=16)
+        axis2.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        axis2.set_title(str(i)+'. Image with Corners ('+image_name+'_out.jpg)', fontsize=16)
+        plt.savefig(chess_distortion_correction_folder+"/"+image_name+'_out.jpg')
+
+```
 
 Finally I calibrated the camera and got my matrix and distortion
 
@@ -97,11 +116,12 @@ radius_left_curve = ((1 + (2*left_lane_fit_curvature[0]*np.max(left_y) + left_la
                              /np.absolute(2*left_lane_fit_curvature[0])
 radius_right_curve = ((1 + (2*right_lane_fit_curvature[0]*np.max(left_y) + right_lane_fit_curvature[1])**2)**1.5) \
                                 /np.absolute(2*right_lane_fit_curvature[0])
+
 ```
     
     # Find position of the vehicle
     vehicles_center = abs(640 - ((right_x_int+left_x_int)/2))
-    
+  ```  
     
 ```
 # Calculating the vehicle position relative to the center of the lane
@@ -121,13 +141,24 @@ radius_right_curve = ((1 + (2*right_lane_fit_curvature[0]*np.max(left_y) + right
     result = cv2.addWeighted(undistorted_image, 1, new_warped, 0.5, 0)
     
     ```
-    
+ 
+ ### Pipeline
+ 
+ This is the pipeline for the video
+ ```
+ # o/p folder creation for Chess 'camera_cal' dir i/p images
+output_videos_folder = 'output_videos'
+if not os.path.exists(output_videos_folder):
+    os.makedirs(output_videos_folder)
+ ```
  ### Discussion
 
-- The pipeline developed this project did a real good job in detecting the lane lines for the  [project_video.mp4] video, which implied that the code worrks well for the known ideal conditions having distinct lane lines, and with not much shadows.
+- The pipeline developed in this project did a real good job in detecting the lane lines for the  [project_video.mp4] video, which implied that the code worrks well for the known ideal conditions having distinct lane lines, and with not much shadows.
 
 - Code mostly did fine on the [challenge_result.mp4] video, with sometimes losing lane lines when heavy shadow was there.
 
 - Code failed miserably on the [harder_challenge_video.mp4] video.
 
-In order to make it more robust, I guess I need to go back and revisit the binary channels selection and see if there is any other combination that can help and work fine in shadows and steep curves. Further reading on this topic may help in making the code robust for challenge videos.
+
+### ReadMe
+For great writeup Check out the [writeup template](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md)
