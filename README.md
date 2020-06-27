@@ -144,7 +144,7 @@ radius_right_curve = ((1 + (2*right_lane_fit_curvature[0]*np.max(left_y) + right
  
  ### Pipeline
  
- This is the pipeline for the video
+
  ```
  # o/p folder creation for Chess 'camera_cal' dir i/p images
 output_videos_folder = 'output_videos'
